@@ -517,7 +517,7 @@ pose_classification_filter = EMADictSmoothing(
 
 # Initialize counter.
 repetition_counter = RepetitionCounter(
-    class_name='push-up',
+    class_name='sit-up',
     enter_threshold=6,
     exit_threshold=4)
 
@@ -530,7 +530,6 @@ with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as p
     while video_cap.isOpened():
       # Get next frame of the video.
       fps = video_cap.get(cv2.CAP_PROP_FPS)
-      print(fps)
       _ , input_frame = video_cap.read()
       # Run pose tracker.
       input_frame = cv2.cvtColor(input_frame, cv2.COLOR_BGR2RGB)
@@ -555,7 +554,7 @@ with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as p
         pose_classification = pose_classifier(pose_landmarks)
         pose_classification_filtered = pose_classification_filter(pose_classification)
         repetitions_count = repetition_counter(pose_classification_filtered)
-        print(repetitions_count)
+      
 
       else:
         pose_classification = None
@@ -563,6 +562,7 @@ with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as p
         pose_classification_filtered = None
         repetitions_count = repetition_counter.n_repeats
 
+      cv2.putText(input_frame,str(repetitions_count),(20,30),cv2.FONT_HERSHEY_SCRIPT_SIMPLEX,1,(0,255,0),2)
       cv2.imshow('frame', input_frame)
       if cv2.waitKey(10) & 0xFF == ord('q'):
         break
